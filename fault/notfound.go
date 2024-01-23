@@ -1,5 +1,7 @@
 package fault
 
+// test
+
 import "errors"
 
 // IsNotFound checks if the error or any of its wrapped errors is a NotFound error.
