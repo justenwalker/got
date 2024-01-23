@@ -1,0 +1,47 @@
+name: "Lint PR"
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Check Out Source"
+        uses: actions/checkout@v4
+      - name: "Install Go"
+        uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+      - name: "Check Code Format"
+        run: |
+          go install github.com/daixiang0/gci@v0.12.1
+          go install mvdan.cc/gofumpt@latest
+          gci write --skip-generated --skip-vendor -s standard -s default -s "prefix(github.com/justenwalker/got)" .
+          gofumpt -w .
+
+      - name: Verify No Changed files
+        uses: tj-actions/verify-changed-files@v16
+        with:
+          fail-if-changed: "true"
+          fail-message: |
+            Go files were not formatted
+          files: |
+            **/*.{go}
+
+      - id: "govulncheck"
+        name: "Check for known vulnerabilities"
+        uses: golang/govulncheck-action@v1
+        with:
+          repo-checkout: false
+      - name: "Run golang-ci Linters"
+        uses: reviewdog/action-golangci-lint@v2
+
+      - name: "Run Tests"
+        run: |
+          go test -v -race -cover ./...
