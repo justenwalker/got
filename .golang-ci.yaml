@@ -1,0 +1,68 @@
+run:
+  timeout: 30m
+  modules-download-mode: readonly
+  skip-dirs: []
+  skip-files:
+    - ".*_gen.go$"   #  ignore generated files ending in _gen.go
+    - ".*\\.gen.go$" #  ignore generated files ending in .gen.go
+
+linters-settings:
+  gomodguard:
+    allowed:
+      domains:
+        - golang.org
+  govet:
+    check-shadowing: true
+  misspell:
+    locale: US
+  gci:
+    local-prefixes: github.com/justenwalker/got
+
+linters:
+  disable-all: true
+  enable:
+    - asasalint
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - containedctx
+    - contextcheck
+    - decorder
+    - dogsled
+    #- dupl
+    - dupword
+    - durationcheck
+    - errcheck
+    - errchkjson
+    - errname
+    - errorlint
+    - exhaustive
+    - exportloopref
+    - forbidigo
+    - gci
+    - gochecknoinits
+    - goconst
+    - gocritic
+    - gocyclo
+    - godot
+    - godox
+    - gofmt
+    - gofumpt
+    - goheader
+    - goimports
+    - gomnd
+    - goprintffuncname
+    - gosimple
+    - govet
+    - ineffassign
+    - misspell
+    - nestif
+    - noctx
+    - nolintlint
+    - revive
+    - staticcheck
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - whitespace
