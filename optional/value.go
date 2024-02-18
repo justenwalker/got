@@ -15,6 +15,16 @@ func Nothing[T any]() Value[T] {
 }
 
 // Value is a generic type that wraps a value of any type T.
+//
+// A Value has several method to support interacting with values (set or unset) in a way that doesn't panic.
+//
+// The Value type also supports JSON marshaling and unmarshalling. A valid Value serializes to its contained value.
+// An invalid or unset Value serializes to null. You can support omitempty by using a pointer to a Value,
+// as the Value type:
+//
+//	type MyJSONStruct struct {
+//	    Int *Value[int] `json:"int,omitempty"`
+//	}
 type Value[T any] struct {
 	// Value is the wrapped value of type T
 	Wrapped T
