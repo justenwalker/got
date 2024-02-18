@@ -12,5 +12,6 @@ dependencies beyond the standard library, so they can be easily copied into a pr
 - `fault` - Utilities for dealing with errors. Named so that it doesn't clash with the built-in `errors` package.
 - `optional` - Implements an optional value type and some utility methods and functions to support it.
 - `attempt` - Helper for calling functions with retry/backoff or timeout policy
+- `semaphore` - A simple implementation of a semaphore using a buffered channel with some convenience methods.
 
 [1]: https://www.youtube.com/watch?v=PAAkCSZUG1c&t=9m28s
