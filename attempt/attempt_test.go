@@ -10,7 +10,29 @@ import (
 	"time"
 )
 
-func ExampleWithRetry() {
+func ExampleWithRetry_decorrelated_jitter() {
+	var i int
+	r, err := WithRetry(context.Background(), RetryStrategy{
+		MaximumAttempts: 3,
+		ShouldRetry:     RetryAlways,
+		Delayer:         DecorrelatedJitter(rand.Float64, 15*time.Millisecond, time.Second, DefaultDecorrelatedScale),
+	}, func(ctx context.Context) (int, error) {
+		fmt.Println("called")
+		i++
+		if i > 2 {
+			return 123, nil
+		}
+		return 0, errors.New("failed")
+	})
+	fmt.Println("result", r, "error", err)
+	// Output:
+	// called
+	// called
+	// called
+	// result 123 error <nil>
+}
+
+func ExampleWithRetry_exponential_backoff_with_full_jitter() {
 	var i int
 	r, err := WithRetry(context.Background(), RetryStrategy{
 		MaximumAttempts: 3,
@@ -34,6 +56,34 @@ func ExampleWithRetry() {
 	// called
 	// called
 	// result 123 error <nil>
+}
+
+func ExampleWithTimeout_success() {
+	r, err := WithTimeout(context.Background(), time.Second, func(ctx context.Context) (int, error) {
+		select {
+		case <-ctx.Done():
+			return 0, ctx.Err()
+		default:
+			return 123, nil
+		}
+	})
+	fmt.Println("result", r, "error", err)
+	// Output:
+	// result 123 error <nil>
+}
+
+func ExampleWithTimeout_deadline_exceeded() {
+	r, err := WithTimeout(context.Background(), time.Second, func(ctx context.Context) (int, error) {
+		select {
+		case <-ctx.Done():
+			return 0, ctx.Err()
+		case <-time.After(5 * time.Second):
+			return 123, nil
+		}
+	})
+	fmt.Println("result", r, "error", err)
+	// Output:
+	// result 0 error context deadline exceeded
 }
 
 func TestWithRetry(t *testing.T) {
